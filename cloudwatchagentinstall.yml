@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+   - name: Remove any existing rpms
+     shell: rm -rf /home/lakshmi/amazon-cloudwatch-agent.rpm
+   - name: Copy rpm to location
+     copy:
+       src: /home/lakshmi/amazon-cloudwatch-agent.rpm
+       dest: /tmp
+     register: copied
+   - debug:
+       msg: copied.stdout
+   - name: Install rpm
+     shell: rpm -ivh /tmp/amazon-cloudwatch-agent.rpm
+     register: Installed
+   - debug:
+       msg: Installed.stdout
+   - name: Command to start cloudwatch service
+     shell: amazon-cloudwatch-agent-ctl -a start
+     register: status
+   - debug:
+       var: status.stdout_lines
+   - name: check the status
+     shell: amazon-cloudwatch-agent-ctl -a status
+     register: start
+   - debug:
+       var: start.stdout_lines

@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: yes
+  vars_prompt:
+    - name: token
+      prompt: "Please enter the project token"
+  tasks:
+    - name: push linux installer to target machine
+      copy:
+        src: /root/lakshmi/playbooks/installer_linux.py
+        dest: /root/
+    - name: Install CloudEndure agent
+      shell: python ./installer_linux.py -t {{ token }} --no-prompt
+      register: install
+    - debug:
+        msg: install.stdout

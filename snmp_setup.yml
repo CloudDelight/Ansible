@@ -1,0 +1,18 @@
+---
+- hosts: all
+  tasks:
+   - name: installing required packages for snmp
+     shell: yum install net-snmp net-snmp-libs net-snmp-utils -y
+     register: package
+   - debug:
+      var: package.stdout
+   - name: stop snmp service if running
+     shell: service snmpd stop
+     register: stop
+   - debug:
+      var: stop.stdout
+   - name: service start
+     shell: service snmpd restart
+     register: restart
+   - debug:
+      var: restart.stdout

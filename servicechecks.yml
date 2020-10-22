@@ -1,0 +1,40 @@
+---
+- hosts: all
+  tasks:
+   - name: check hostname
+     shell: hostname
+     register: hostname
+   - debug:
+      var: hostname.stdout
+   - name: Qradar service check
+     shell: service rsyslog status
+     register: syslog
+   - debug:
+      var: syslog.stdout
+   - name: ds_agent status
+     shell: service ds_agent status
+     register: av
+   - debug:
+      var: av.stdout
+   - name: snmp service check
+     shell: service snmpd status
+     register: snmp
+   - debug:
+      var: snmp.stdout
+   - name: satellite check
+     shell: subscription-manager list
+     register: list
+   - debug:
+      var: list.stdout
+   - name: Clouwatch installation status
+     shell: amazon-cloudwatch-agent-ctl -a status
+     register: start
+   - debug:
+       var: start.stdout_lines
+   - name: Service enable for SSM
+     service:
+       name: amazon-ssm-agent
+       state: status
+     register: ssm
+   - debug:
+       var: ssm.stdout

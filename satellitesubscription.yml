@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: yes
+  vars_prompt:
+    - name: key
+      prompt: "Please enter the subscription key"
+      private: no
+  tasks:
+    - name: delete katello existing package
+      shell: rpm -e <katello rpm>
+      register: delete
+    - debug:
+       var: delete.debug
+    - name: copy katello package
+      copy:
+       src: /root/katello-ca-consumer-latest.noarch.rpm
+       dest: /tmp
+      register: copy
+    - debug:
+       var: copy.stdout
+    - name: run katello rpm
+      shell: rpm -ivh /tmp/katello-ca-consumer-latest.noarch.rpm
+      register: install
+    - debug:
+       var: install.stdout
+    - name: satellite subscription
+      shell: subscription-manager register --org="orgname" --activationkey="key" --force
+      register: subs

@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+   - name: Remove any existing rpms
+     shell: rm -rf /home/amazon-ssm-agent.rpm
+   - name: Copy rpm to location
+     copy:
+       src: /home/amazon-ssm-agent.rpm
+       dest: /home/
+     register: copied
+   - debug:
+       msg: copied.stdout
+   - name: Install rpm
+     shell: rpm -ivh /home/amazon-ssm-agent.rpm
+     register: Installed
+   - debug:
+       msg: Installed.stdout
+   - name: Service enable for SSM
+     service: 
+       name: amazon-ssm-agent
+       state: started
+       enabled: yes
